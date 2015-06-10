@@ -7,7 +7,24 @@
 
 
 #ifndef MEGA88A_UART_LIBRARY_H_
+
+#ifndef F_CPU
+#define F_CPU 16000000UL
+#pragma message("UART Library did not find CPU speed set, setting to default.")
+#endif
+
+#define USART_BAUDRATE 9600
+
+#ifdef DOUBLE_SPEED_MODE_ENABLE
+#define SPEED_MODE_DIV 8UL
+#else
+#define SPEED_MODE_DIV 16UL
+#endif
+
+#define BAUD_PRESCALE (((F_CPU / (USART_BAUDRATE * SPEED_MODE_DIV))) - 1)
+
 #define MEGA88A_UART_LIBRARY_H_
+
 
 void initUart();
 

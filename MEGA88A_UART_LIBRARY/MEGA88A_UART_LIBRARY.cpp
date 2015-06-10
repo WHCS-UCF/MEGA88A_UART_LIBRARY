@@ -5,18 +5,26 @@
  *  Author: Jimmy
  */ 
 
-#define BAUD_PRESCALE (((F_CPU / (USART_BAUDRATE * 8UL))) - 1)
-
 #include <avr/io.h>
+#include "MEGA88A_UART_LIBRARY.h"
 
 void initUart(){
 	
-	//Asynchronous Double Speed Mode
+	//Asynchronous Double Speed Mode: UCSR0A |= (1 << U2X0);
 	/*
 	BAUD = (fosc/(8(UBRR+1)))
 	*/
+	//Asynchronous Normal Speed Mode: UCSR0A &= ~(1 << U2X0);
+	/*
+	BAUD = (fosc/(16(UBRR+1)))
+	*/	
+	#ifdef DOUBLE_SPEED_MODE_ENABLE
 	UCSR0A |= (1 << U2X0);
-
+	#else
+	UCSR0A &= ~(1 << U2X0);
+	#endif
+	
+	
 	/* Turn on the transmission and reception circuitry. */
 	/*
 	RXCIE: RX Complete Interrupt Enable
@@ -32,7 +40,7 @@ void initUart(){
 
 	/* BAUD prescale */
 	//For use in calculating the baud rate, this is not the actual BAUD rate.
-	UBRR0 = 12;	
+	UBRR0 = BAUD_PRESCALE;	
 }
 
 void enableRXInterrupts(){
